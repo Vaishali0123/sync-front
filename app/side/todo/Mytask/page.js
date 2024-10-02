@@ -16,6 +16,7 @@ import { decryptaes } from "@/app/security";
 import { API } from "@/utils/Essentials";
 import moment from "moment";
 import { useAuthContext } from "@/utils/auth";
+import { HiFlag } from "react-icons/hi";
 
 function page() {
   // const [isModalOpen, setIsModalOpen] = useState(false);
@@ -157,74 +158,141 @@ function page() {
           ) : (
             <div className="flex w-full gap-2 flex-col">
               <div className="w-full flex flex-col items-center py-2 justify-center gap-2">
-                <div className="w-[99%] items-center justify-center gap-1 space-y-2 p-2 px-2 rounded-2xl bg-[#fff] flex flex-col">
-                  <div className=" w-full items-center justify-between flex flex-row">
-                    <div className="flex justify-center items-center">
-                      <div className="h-[40px] w-[40px] rounded-full bg-yellow-500 ">
-                        <img
-                          // src={{ uri: item?.creator?.dp }}
-                          src={data?.dp}
-                          className="h-[40px] w-[40px] rounded-full bg-red-50 -ml-[3px] border-2 border-yellow-500 -mt-[3px]"
-                        />
-                      </div>
-                      <div className=" px-2 flex flex-col">
-                        <div className="font-bold font-sans text-[14px] text-black">
-                          By You
+                {combinedTasks.filter((f) => f?.type === "task").length > 0 && (
+                  <div className="w-[99%] items-center justify-center gap-1 space-y-2 p-2 px-2 rounded-2xl bg-[#fff] flex flex-col">
+                    <div className=" w-full items-center justify-between flex flex-row">
+                      <div className="flex justify-center items-center">
+                        <div className="h-[40px] w-[40px] rounded-full bg-yellow-500 ">
+                          <img
+                            // src={{ uri: item?.creator?.dp }}
+                            src={data?.dp}
+                            className="h-[40px] w-[40px] rounded-full bg-red-50 -ml-[3px] border-2 border-yellow-500 -mt-[3px]"
+                          />
+                        </div>
+                        <div className=" px-2 flex flex-col">
+                          <div className="font-bold font-sans text-[14px] text-black">
+                            By You
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="w-full flex flex-col gap-3  rounded-xl text-black">
-                    {combinedTasks
-                      .filter((f) => f?.type === "task")
-                      .map((items, ind) => {
-                        const formattedTimes = moment(items?.timestamp).format(
-                          "HH:mm"
-                        );
-                        const formattedDays = moment(items?.timestamp).format(
-                          "dddd"
-                        );
-                        const formattedDates = moment(items?.timestamp).format(
-                          "MMMM Do, YYYY"
-                        );
+                    <div className="w-full flex flex-col gap-3  rounded-xl text-black">
+                      {combinedTasks
+                        .filter((f) => f?.type === "task")
+                        .map((items, ind) => {
+                          const formattedTimes = moment(
+                            items?.timestamp
+                          ).format("HH:mm");
+                          const formattedDays = moment(items?.timestamp).format(
+                            "dddd"
+                          );
+                          const formattedDates = moment(
+                            items?.timestamp
+                          ).format("MMMM Do, YYYY");
 
-                        return (
-                          <div className="flex justify-between mt-2 bg-[#FFF8EB] w-full items-center">
-                            <div
-                              style={{
-                                overflowWrap: "break-word",
-                                wordWrap: "break-word",
-                                wordBreak: "break-word",
-                              }}
-                              className="text-[14px] p-2 text-black "
-                            >
-                              {ind + 1}) {renderText(items?.text)}
-                            </div>
-                            <div className="flex justify-center items-center">
-                              <div className="text-[14px] text-[#414141]">
-                                {moment(items.createdAt).fromNow()}
-                              </div>
-                              <div className="flex-col items-center  flex justify-center gap-2">
-                                <div className="text-[12px] pn:max-sm:text-[10px] text-[#414141] ">
-                                  {formattedDays}, {formattedTimes},{" "}
-                                  {formattedDates}
+                          return (
+                            <div className="flex justify-between mt-2 bg-[#FFF8EB] w-full items-center">
+                              <div className="p-2">
+                                <div
+                                  style={{
+                                    overflowWrap: "break-word",
+                                    wordWrap: "break-word",
+                                    wordBreak: "break-word",
+                                  }}
+                                  className="text-[14px]  text-black "
+                                >
+                                  {ind + 1}){" "}
+                                  <span className="pl-1">
+                                    {renderText(items?.text)}
+                                  </span>
+                                </div>{" "}
+                                <div className="text-[11px] font-semibold px-4 text-[#414141]">
+                                  {moment(items.createdAt).fromNow()}
                                 </div>
                               </div>
-                              {items?.text?.split("")?.length > maxWords && (
-                                <button
-                                  onClick={toggleText}
-                                  className="text-blue-500   text-[12px] p-2  flex justify-center items-end"
-                                >
-                                  {isExpanded ? "See less" : "See more"}
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-                </div>
+                              <div className="flex flex-col justify-end gap-2 items-end">
+                                <div className="flex-col items-center  flex justify-center gap-2">
+                                  <div className="text-[12px] pn:max-sm:text-[10px] text-[#414141] ">
+                                    {formattedTimes}, {formattedDates}
+                                  </div>
+                                </div>
+                                {/* {items?.text?.split("")?.length > maxWords && (
+                                  <button
+                                    onClick={toggleText}
+                                    className="text-blue-500   text-[12px] p-2  flex justify-center items-end"
+                                  >
+                                    {isExpanded ? "See less" : "See more"}
+                                  </button>
+                                )} */}
 
+                                <div
+                                  onClick={() => {
+                                    handleImageClick({
+                                      taskid: items?.task?._id,
+                                      id: data.id,
+                                    });
+                                  }}
+                                  className=" object-contain relative text-[14px] px-2 text-green-600   flex items-center gap-2 text-center"
+                                >
+                                  {/* <div>{item?.task?.progress}</div> */}
+                                  {/* <FaAngleDown
+                                  onClick={() => {
+                                    setClick(!click);
+                                    setStatusindex(index);
+                                  }}
+                                /> */}
+                                  <HiFlag
+                                    className={`text-[18px]  ${
+                                      task?.progress === "Not Started"
+                                        ? "text-red-500"
+                                        : task?.progress === "In progress"
+                                        ? "text-yellow-500"
+                                        : "text-green-500"
+                                    }`}
+                                  />
+                                  <div
+                                    className={`duration-100 ${
+                                      click === true && statusindex === ind
+                                        ? "h-auto w-auto text-[#474747] font-medium top-5 bg-white p-1 shadow-md rounded-lg absolute text-[14px] "
+                                        : "h-0 w-0 text-[0px] shadow-sm p-0"
+                                    }`}
+                                  >
+                                    <div
+                                      className={`${
+                                        click === true
+                                          ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer"
+                                          : " py-0 duration-100 cursor-pointer px-0"
+                                      }`}
+                                    >
+                                      To do
+                                    </div>
+                                    <div
+                                      className={`${
+                                        click === true
+                                          ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer px-2"
+                                          : "py-0 duration-100 cursor-pointer px-0"
+                                      }`}
+                                    >
+                                      In progress
+                                    </div>
+                                    <div
+                                      className={`${
+                                        click === true
+                                          ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer px-2"
+                                          : " py-0 duration-100 cursor-pointer px-0"
+                                      }`}
+                                    >
+                                      Done{" "}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                )}
                 {load === "load" ? (
                   combinedTasks.map((item, index) => {
                     const formattedTime = moment(item.timestamp).format(
@@ -304,7 +372,6 @@ function page() {
                                   src={url + item?.task?.assignedBy?.dp}
                                   className="h-[40px] w-[40px] rounded-full bg-red-50 -ml-[3px] border-2 border-yellow-500 -mt-[3px]"
                                 />
-                                {console.log(item, "ghjk")}
                               </div>
                               <div className=" px-2 flex flex-col">
                                 <div className="font-bold font-sans text-[14px] text-black">
@@ -316,7 +383,6 @@ function page() {
                                     : `to`}{" "}
                                   {item?.team?.teamname}
                                 </div>
-
                                 <div className="text-[14px] text-[#414141]">
                                   {moment(item?.task?.assignedAt).fromNow()}
                                 </div>
@@ -329,61 +395,9 @@ function page() {
                               {/* <div className="text-[14px] text-[#414141] ">
                               {moment(item?.task?.assignedAt).fromNow()}
                             </div> */}
-                              <div
-                                onClick={() => {
-                                  handleImageClick({
-                                    taskid: item?.task?._id,
-                                    id: data.id,
-                                  });
-                                }}
-                                className=" object-contain relative bg-[#00ff7774] text-[14px] px-2 rounded-full border-[1px] text-green-600 border-green-600 flex items-center justify-center gap-2 text-center"
-                              >
-                                <div>{item?.task?.progress}</div>
-                                <FaAngleDown
-                                  onClick={() => {
-                                    setClick(!click);
-                                    setStatusindex(index);
-                                  }}
-                                />
-                                <div
-                                  className={`duration-100 ${
-                                    click === true && statusindex === index
-                                      ? "h-auto w-auto text-[#474747] font-medium top-5 bg-white p-1 shadow-md rounded-lg absolute text-[14px] "
-                                      : "h-0 w-0 text-[0px] shadow-sm p-0"
-                                  }`}
-                                >
-                                  <div
-                                    className={`${
-                                      click === true
-                                        ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer"
-                                        : " py-0 duration-100 cursor-pointer px-0"
-                                    }`}
-                                  >
-                                    To do
-                                  </div>
-                                  <div
-                                    className={`${
-                                      click === true
-                                        ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer px-2"
-                                        : "py-0 duration-100 cursor-pointer px-0"
-                                    }`}
-                                  >
-                                    In progress
-                                  </div>
-                                  <div
-                                    className={`${
-                                      click === true
-                                        ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer px-2"
-                                        : " py-0 duration-100 cursor-pointer px-0"
-                                    }`}
-                                  >
-                                    Done{" "}
-                                  </div>
-                                </div>
-                              </div>
                             </div>
                           </div>
-                          <div className="w-full flex flex-row bg-[#FFF8EB] rounded-xl text-black">
+                          <div className=" w-full flex flex-row bg-[#FFF8EB] rounded-xl justify-between w-full text-black">
                             <div
                               style={{
                                 overflowWrap: "break-word",
@@ -394,6 +408,67 @@ function page() {
                             >
                               {renderText(item?.task?.task)}
                               {/* {item?.task?.task} */}
+                            </div>
+                            <div
+                              onClick={() => {
+                                handleImageClick({
+                                  taskid: item?.task?._id,
+                                  id: data.id,
+                                });
+                              }}
+                              className=" object-contain relative text-[14px] px-2 text-green-600   flex items-center gap-2 text-center"
+                            >
+                              {/* <div>{item?.task?.progress}</div> */}
+                              {/* <FaAngleDown
+                                  onClick={() => {
+                                    setClick(!click);
+                                    setStatusindex(index);
+                                  }}
+                                /> */}
+                              <HiFlag
+                                className={`text-[18px]  ${
+                                  task?.progress === "Not Started"
+                                    ? "text-red-500"
+                                    : task?.progress === "In progress"
+                                    ? "text-yellow-500"
+                                    : "text-green-500"
+                                }`}
+                              />
+                              <div
+                                className={`duration-100 ${
+                                  click === true && statusindex === index
+                                    ? "h-auto w-auto text-[#474747] font-medium top-5 bg-white p-1 shadow-md rounded-lg absolute text-[14px] "
+                                    : "h-0 w-0 text-[0px] shadow-sm p-0"
+                                }`}
+                              >
+                                <div
+                                  className={`${
+                                    click === true
+                                      ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer"
+                                      : " py-0 duration-100 cursor-pointer px-0"
+                                  }`}
+                                >
+                                  To do
+                                </div>
+                                <div
+                                  className={`${
+                                    click === true
+                                      ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer px-2"
+                                      : "py-0 duration-100 cursor-pointer px-0"
+                                  }`}
+                                >
+                                  In progress
+                                </div>
+                                <div
+                                  className={`${
+                                    click === true
+                                      ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer px-2"
+                                      : " py-0 duration-100 cursor-pointer px-0"
+                                  }`}
+                                >
+                                  Done{" "}
+                                </div>
+                              </div>
                             </div>
                             {item?.task?.task.split("").length > maxWords && (
                               <button
@@ -406,6 +481,120 @@ function page() {
                           </div>
                         </div>
                       );
+
+                      // return (
+                      //   <div
+                      //     key={index}
+                      //     className="w-[99%] items-center justify-center gap-1 space-y-2 p-2 px-2 rounded-2xl bg-white flex flex-col"
+                      //   >
+                      //     <div className=" w-full items-center justify-between flex flex-row">
+                      //       <div className="flex justify-center items-center">
+                      //         <div className="h-[40px] w-[40px] rounded-full bg-yellow-500">
+                      //           <img
+                      //             src={url + item?.task?.assignedBy?.dp}
+                      //             className="h-[40px] w-[40px] rounded-full bg-red-50 -ml-[3px] border-2 border-yellow-500 -mt-[3px]"
+                      //           />
+                      //         </div>
+                      //         <div className=" px-2 flex flex-col">
+                      //           <div className="font-bold font-sans text-[14px] text-black">
+                      //             {item?.task?.assignedBy?._id === id
+                      //               ? "For You"
+                      //               : `By ${item?.task?.assignedBy?.name}`}{" "}
+                      //             {item?.task?.assignedBy?._id === id
+                      //               ? "for"
+                      //               : `to`}{" "}
+                      //             {item?.team?.teamname}
+                      //           </div>
+
+                      //           <div className="text-[14px] text-[#414141]">
+                      //             {moment(item?.task?.assignedAt).fromNow()}
+                      //           </div>
+                      //         </div>
+                      //       </div>
+                      //       <div className="flex-col flex items-center justify-center gap-2">
+                      //         <div className="text-[12px] pn:max-sm:text-[10px] text-[#414141] ">
+                      //           {formattedDay}, {formattedTime}, {formattedDate}
+                      //         </div>
+                      //         {/* <div className="text-[14px] text-[#414141] ">
+                      //         {moment(item?.task?.assignedAt).fromNow()}
+                      //       </div> */}
+                      //         <div
+                      //           onClick={() => {
+                      //             handleImageClick({
+                      //               taskid: item?.task?._id,
+                      //               id: data.id,
+                      //             });
+                      //           }}
+                      //           className=" object-contain relative bg-[#00ff7774] text-[14px] px-2 rounded-full border-[1px] text-green-600 border-green-600 flex items-center justify-center gap-2 text-center"
+                      //         >
+                      //           <div>{item?.task?.progress}</div>
+                      //           <FaAngleDown
+                      //             onClick={() => {
+                      //               setClick(!click);
+                      //               setStatusindex(index);
+                      //             }}
+                      //           />
+                      //           <div
+                      //             className={`duration-100 ${
+                      //               click === true && statusindex === index
+                      //                 ? "h-auto w-auto text-[#474747] font-medium top-5 bg-white p-1 shadow-md rounded-lg absolute text-[14px] "
+                      //                 : "h-0 w-0 text-[0px] shadow-sm p-0"
+                      //             }`}
+                      //           >
+                      //             <div
+                      //               className={`${
+                      //                 click === true
+                      //                   ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer"
+                      //                   : " py-0 duration-100 cursor-pointer px-0"
+                      //               }`}
+                      //             >
+                      //               To do
+                      //             </div>
+                      //             <div
+                      //               className={`${
+                      //                 click === true
+                      //                   ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer px-2"
+                      //                   : "py-0 duration-100 cursor-pointer px-0"
+                      //               }`}
+                      //             >
+                      //               In progress
+                      //             </div>
+                      //             <div
+                      //               className={`${
+                      //                 click === true
+                      //                   ? "hover:bg-[#f8f8f8] rounded-lg py-1 duration-100 cursor-pointer px-2"
+                      //                   : " py-0 duration-100 cursor-pointer px-0"
+                      //               }`}
+                      //             >
+                      //               Done{" "}
+                      //             </div>
+                      //           </div>
+                      //         </div>
+                      //       </div>
+                      //     </div>
+                      //     <div className="w-full flex flex-row bg-[#FFF8EB] rounded-xl text-black">
+                      //       <div
+                      //         style={{
+                      //           overflowWrap: "break-word",
+                      //           wordWrap: "break-word",
+                      //           wordBreak: "break-word",
+                      //         }}
+                      //         className="text-[14px] p-2 text-black "
+                      //       >
+                      //         {renderText(item?.task?.task)}
+                      //         {/* {item?.task?.task} */}
+                      //       </div>
+                      //       {item?.task?.task.split("").length > maxWords && (
+                      //         <button
+                      //           onClick={toggleText}
+                      //           className="text-blue-500"
+                      //         >
+                      //           {isExpanded ? "See less" : "See more"}
+                      //         </button>
+                      //       )}
+                      //     </div>
+                      //   </div>
+                      // );
                     }
                   })
                 ) : (

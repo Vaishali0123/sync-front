@@ -14,9 +14,8 @@ import { LuSearch } from "react-icons/lu";
 import chat from "../../assets/chat.png";
 import pic from "../../assets/pic.png";
 import { RiGroupLine } from "react-icons/ri";
-import { GrAdd } from "react-icons/gr";
+import { GrAdd, GrSubtract } from "react-icons/gr";
 import { IoIosRemove } from "react-icons/io";
-
 
 function page() {
   const router = useRouter();
@@ -29,12 +28,13 @@ function page() {
   const [convId, setConvId] = useState("");
   const [team, setTeam] = useState([]);
   const [currentTeamId, setCurrentTeamId] = useState();
-  const [orgid, setOrgid] = useState("")
+  const [currentAdmin, setCurrentAdmin] = useState();
+  const [orgid, setOrgid] = useState("");
 
   useEffect(() => {
-    const s = localStorage.getItem("orgid")
-    setOrgid(s)
-  }, [])
+    const s = localStorage.getItem("orgid");
+    setOrgid(s);
+  }, []);
 
   const { data } = useAuthContext();
 
@@ -42,9 +42,7 @@ function page() {
 
   const func = async () => {
     try {
-      const response = await axios.get(
-        `${API}/getmembers/${data.id}/${orgid}`
-      );
+      const response = await axios.get(`${API}/getmembers/${data.id}/${orgid}`);
       setMemdata(response?.data);
       console.log(response?.data);
     } catch (e) {
@@ -60,9 +58,7 @@ function page() {
   // Passing userid for chatting
   const userchat = async (mail) => {
     try {
-      const response = await axios.get(
-        `${API}/getmembers/${data.id}/${orgid}`
-      );
+      const response = await axios.get(`${API}/getmembers/${data.id}/${orgid}`);
       console.log(response.data, "members");
 
       const members = response.data;
@@ -180,7 +176,12 @@ function page() {
     }
   };
 
-  const addMembersHandler = async (teamId) => {
+  const getInitials = (name) => {
+    return name ? name.charAt(0).toUpperCase() : "";
+  };
+
+  const addMembersHandler = async (teamId, adminId) => {
+    setCurrentAdmin(adminId);
     setCurrentTeamId(teamId);
     openAddMembersModal();
   };
@@ -222,14 +223,15 @@ function page() {
     }
   }, [orgid]);
 
-
   const deleteTeams = async (teamId) => {
     try {
-      const res = await axios.post(`${API}/v1/deleteteam/${data?.id}/${teamId}/${orgid}`)
+      const res = await axios.post(
+        `${API}/v1/deleteteam/${data?.id}/${teamId}/${orgid}`
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   return (
     <div className="h-[100%] w-full scrollbar-hide flex flex-col bg-[#FFFBF3] gap-2 items-center ">
@@ -300,6 +302,7 @@ function page() {
           )}
           {addMembers && (
             <AddMemberModal
+              admin={currentAdmin}
               closeAddMembersModal={closeAddMembersModal}
               teamId={currentTeamId}
               userId={data.id}
@@ -307,13 +310,7 @@ function page() {
           )}
         </div>
       </div>
-      {/* <div className="flex justify-around font-semibold text-[15px] gap-10 w-[100%] text-[#444444]">
-        <div>Name</div> 
-        <div>Role</div>
-        <div>Create Date</div> 
-        <div>Position</div>     
-        <div>Action</div>
-      </div> */}
+
       {/* Team */}
       <div className=" text-[#5A5A5A] text-[14px] h-full  sm:h-[45%] bg-white sm:p-1 sm:rounded-2xl mt-2 w-full flex flex-col items-center">
         {/* Header */}
@@ -322,9 +319,7 @@ function page() {
           <div className=" w-[45%] px-4 justify-start items-start flex">
             Team name
           </div>
-          <div className=" w-[15%]">
-            No. of Members
-          </div>
+          <div className=" w-[15%]">No. of Members</div>
           <div className=" w-[20%] flex justify-center items-center">
             Action
           </div>
@@ -349,11 +344,14 @@ function page() {
                   className="flex flex-row my-2 ml-6 w-[100%]  h-[75px] items-center  border-b-[1px]  border-[#f1f1f1]"
                 >
                   <div className=" pn:max-sm:w-[30%]  w-[50%] space-x-2 px-2 flex justify-items-start">
-                    <Image
+                    {/* <Image
                       alt="pic"
                       src={pic}
                       className="h-[40px] w-[40px] object-contain"
-                    />
+                    /> */}
+                    <div className="h-[40px] flex justify-center items-center text-lg font-semibold text-white rounded-full w-[40px] bg-[#FFC248]">
+                      {getInitials(f?.teamname)}
+                    </div>
                     <div className="flex flex-col ">
                       <div className="text-[14px] font-bold">{f?.teamname}</div>
                       <div className="text-[12px] ">{f?.admin?.name}</div>
@@ -363,41 +361,71 @@ function page() {
                     {f?.members?.length}
                   </div>
 
-
-                  {f?.admin._id === data?.id && (
-                    <div
-
-
-                      className="w-[35%] h-full flex flex-row items-center ml-10 justify-center"
-                    >
+                  {/* {f?.admin._id === data?.id && (
+                    <div className="w-[35%] h-full flex flex-row items-center ml-10 justify-center">
                       <div className="w-[20%] pn:max-sm:hidden text-[12px] flex justify-center items-center">
                         <div className="w-[20px] flex justify-start items-center ">
-
                           {f?.admin?._id !== data?.id && (
                             <div onClick={() => joinTeams(f?._id)}>join</div>
                           )}
-                          <MdDeleteOutline onClick={() => deleteTeams(f._id)} className="h-[20px] w-[20px] text-red-400" />
+                          <MdDeleteOutline
+                            onClick={() => deleteTeams(f._id)}
+                            className="h-[20px] w-[20px] text-red-400"
+                          />
                         </div>
                       </div>
-                      <RiGroupLine className="h-6 w-6" onClick={() => {
+                      <RiGroupLine
+                        className="h-6 w-6"
+                        onClick={() => {
+                          addMembersHandler(f?._id);
+                        }}
+                      />
+                    </div>
+                  )} */}
+
+                  {f?.admin._id === data?.id && (
+                    <div className="w-[35%] h-full flex flex-row items-center ml-10 px-5 justify-center">
+                      <div className="w-[13%] pn:max-sm:hidden text-[12px] flex justify-center ml-12 items-center">
+                        <div className="w-[20px] flex justify-start items-center ">
+                          {f?.admin?._id !== data?.id && (
+                            <div onClick={() => joinTeams(f?._id)}>join</div>
+                          )}
+                          <MdDeleteOutline
+                            onClick={() => deleteTeams(f._id)}
+                            className="h-[20px] w-[20px] text-red-400"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <button
+                          className="rounded-lg bg-gray-200 px-3 py-1 border border-gray-300 text-[13px] text-blue-500 hover:text-black shadow-sm"
+                          onClick={() => {
+                            addMembersHandler(f?._id, f?.admin?._id);
+                          }}
+                        >
+                          View
+                        </button>
+                      </div>
+                      {/* <RiGroupLine className="h-6 w-6" onClick={() => {
                         addMembersHandler(f?._id);
-                      }} />
+                      }} /> */}
                     </div>
                   )}
-                  {/* <div
-                    onClick={() => {
-                      router.push(
-                        `../side/teamchat?teamId=${f?._id}&userId=${d?._id}`
-                      );
-                    }}
-                    className="w-[20%]   h-full flex flex-row items-center justify-center"
-                  >
-                    <Image
-                      src={chat}
-                      alt="chat"
-                      className="w-[20px] h-[20px] resize"
-                    />
-                  </div> */}
+
+                  {f?.admin._id !== data?.id && (
+                    <div className="w-[35%] h-full flex flex-row items-center ml-16 px-5 justify-center">
+                      <div>
+                        <button
+                          className="rounded-lg bg-gray-200 px-3 py-1 border border-gray-300 text-[13px] text-blue-500 hover:text-black shadow-sm"
+                          onClick={() => {
+                            addMembersHandler(f?._id, f?.admin?._id);
+                          }}
+                        >
+                          View
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )
               // : null
@@ -408,9 +436,7 @@ function page() {
       {/* Members */}
       <div className=" text-[#5A5A5A] text-[14px] h-full sm:h-[42%] bg-white sm:p-1 sm:rounded-2xl mt-2 w-full flex flex-col items-center">
         {/* Header */}
-        <div className="w-[100%]">
-          Members
-        </div>
+        <div className="w-[100%]">Members</div>
         <div className="flex flex-row bg-[#FFF8EB] sm:rounded-2xl font-bold w-[100%] h-[10%] items-center pn:max-sm:hidden justify-evenly">
           <div className=" w-[45%] px-4 justify-start items-center flex">
             Name
@@ -438,11 +464,17 @@ function page() {
                 className="flex flex-row my-2 w-[100%] h-[75px] items-center justify-between border-b-[1px] border-[#f1f1f1]"
               >
                 <div className="flex items-center pn:max-sm:w-[30%] w-[45%] space-x-2 px-2">
-                  <Image
+                  {/* <Image
                     alt="pic"
                     src={pic}
                     className="h-[40px] w-[40px] object-contain"
-                  />
+                  /> */}
+                  <div className="h-[40px] w-[40px] rounded-full overflow-hidden">
+                    <img
+                      src={process.env.NEXT_PUBLIC_URL + m?.dp}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <div className="flex flex-col">
                     <div className="text-[14px] font-bold">{m?.name}</div>
                     <div className="text-[12px] ">{m?.email}</div>
@@ -478,7 +510,112 @@ function page() {
   );
 }
 
-const AddMemberModal = ({ closeAddMembersModal, teamId, userId }) => {
+// const AddMemberModal = ({ closeAddMembersModal, teamId, userId, admin }) => {
+//   const [selectedUserIds, setSelectedUserIds] = useState([]);
+//   const [members, setMembers] = useState([]);
+
+//   const getMembers = async () => {
+//     try {
+//       const response = await axios.get(
+//         `${API}/getAddMembers/${userId}/${teamId}`
+//       );
+//       setMembers(response?.data.members);
+//       setSelectedUserIds(response?.data.teamMembers);
+//     } catch (e) {
+//       console.error("Error in finding members", e.message);
+//     }
+//   };
+
+//   const toggleUser = (id) => {
+//     if (selectedUserIds.includes(id)) {
+//       setSelectedUserIds(selectedUserIds.filter((userId) => userId !== id));
+//     } else {
+//       setSelectedUserIds([...selectedUserIds, id]);
+//     }
+//   };
+
+//   const submitUsers = async () => {
+//     try {
+//       const response = await axios.post(
+//         `${API}/joinedteam/${userId}/${teamId}`,
+//         {
+//           userIds: selectedUserIds,
+//         }
+//       );
+//       setMembers(response?.data.members);
+//       setSelectedUserIds(response?.data.teamMembers);
+//     } catch (e) {
+//       console.error("Error in finding members", e.message);
+//     }
+//     closeAddMembersModal();
+//   };
+//   useEffect(() => {
+//     getMembers();
+//   }, []);
+
+//   return (
+//     <div className="modal">
+//       <div className="fixed top-0 left-0 h-screen w-screen flex justify-center items-center bg-opacity-50 bg-gray-800">
+//         <div className="bg-yellow-50 p-4 rounded-xl w-[100%] sm:w-[30%] flex-col h-[70%] flex justify-evenly items-center">
+//           <div className="flex flex-row h-[5%] justify-between items-center w-[90%]">
+//             <div className="text-[16px] text-black flex items-center h-[100%] font-semibold">
+//               Add Users to Team
+//             </div>
+//           </div>
+
+//           <div className="w-[90%] h-[60%] overflow-y-auto">
+//             {/* admin id => admin */}
+//             {/* user id => userId */}
+//             {/* user id => userId */}
+//             {members.map((user) => (
+//               <div
+//                 key={user._id}
+//                 className="flex flex-row justify-between items-center p-2 border-b-2 border-[#FFC248]"
+//               >
+//                 <div className="text-black text-[15px]">{user.name}</div>
+//                 <button
+//                   onClick={() => toggleUser(user._id)}
+//                   disabled={user._id === userId} // Disable button for the admin (the current user)
+//                   className={`text-center item-center text-black rounded-lg ${
+//                     user._id === userId // If it's the admin, don't show any button
+//                       ? ""
+//                       : selectedUserIds.includes(user._id)
+//                       ? "bg-red-500 p-2 w-[35px]" // Show red minus button for selected users
+//                       : "bg-[#FFC248] p-2 w-[35px]" // Show add button for non-selected users
+//                   }`}
+//                 >
+//                   {user._id !== userId &&
+//                     (selectedUserIds.includes(user._id) ? (
+//                       <GrSubtract /> // Show minus icon for selected users (except the admin)
+//                     ) : (
+//                       <GrAdd /> // Show add icon for non-selected users
+//                     ))}
+//                 </button>
+//               </div>
+//             ))}
+//           </div>
+
+//           <div className="flex flex-row justify-between items-center w-[90%] space-x-1 h-[10%]">
+//             <button
+//               onClick={closeAddMembersModal}
+//               className="w-[50%] flex justify-center items-center text-black text-[14px] font-semibold h-[100%] bg-white rounded-3xl"
+//             >
+//               Cancel
+//             </button>
+//             <button
+//               onClick={submitUsers}
+//               className="w-[50%] flex justify-center items-center text-black text-[14px] font-semibold h-[100%] bg-[#FFC248] rounded-3xl"
+//             >
+//               Add Users
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+const AddMemberModal = ({ closeAddMembersModal, teamId, userId, admin }) => {
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [members, setMembers] = useState([]);
 
@@ -513,13 +650,16 @@ const AddMemberModal = ({ closeAddMembersModal, teamId, userId }) => {
       setMembers(response?.data.members);
       setSelectedUserIds(response?.data.teamMembers);
     } catch (e) {
-      console.error("Error in finding members", e.message);
+      console.error("Error in submitting members", e.message);
     }
     closeAddMembersModal();
   };
+
   useEffect(() => {
     getMembers();
   }, []);
+
+  console.log(admin, userId, admin === userId);
 
   return (
     <div className="modal">
@@ -538,36 +678,62 @@ const AddMemberModal = ({ closeAddMembersModal, teamId, userId }) => {
                 className="flex flex-row justify-between items-center p-2 border-b-2 border-[#FFC248]"
               >
                 <div className="text-black text-[15px]">{user.name}</div>
-                <button
-                  onClick={() => toggleUser(user._id)}
-                  className={` text-center item-center  text-black rounded-lg ${selectedUserIds.includes(user._id)
-                    ? ""
-                    : "bg-[#FFC248] p-2 w-[35px]"
+                {/* Render toggle button if current user is the admin */}
+                {admin === userId && (
+                  <button
+                    onClick={() => toggleUser(user._id)}
+                    disabled={user._id === admin} // Disable for the admin
+                    className={`text-center item-center text-black rounded-lg ${
+                      user._id === admin
+                        ? "" // No button for admin
+                        : selectedUserIds.includes(user._id)
+                        ? "bg-red-500 p-2 w-[35px]" // Show red minus button for selected users
+                        : "bg-[#FFC248] p-2 w-[35px]" // Show add button for non-selected users
                     }`}
-                >
-                  {selectedUserIds.includes(user._id) ? <></> : <GrAdd />}
-                </button>
+                  >
+                    {user._id !== admin &&
+                      (selectedUserIds.includes(user._id) ? (
+                        <GrSubtract /> // Show minus icon for selected users
+                      ) : (
+                        <GrAdd /> // Show add icon for non-selected users
+                      ))}
+                  </button>
+                )}
               </div>
             ))}
           </div>
 
-          <div className="flex flex-row justify-between items-center w-[90%] space-x-1 h-[10%]">
-            <button
-              onClick={closeAddMembersModal}
-              className="w-[50%] flex justify-center items-center text-black text-[14px] font-semibold h-[100%] bg-white rounded-3xl"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={submitUsers}
-              className="w-[50%] flex justify-center items-center text-black text-[14px] font-semibold h-[100%] bg-[#FFC248] rounded-3xl"
-            >
-              Add Users
-            </button>
-          </div>
+          {/* Render submit button if the current user is the admin */}
+          {admin === userId && (
+            <div className="flex flex-row justify-between items-center w-[90%] space-x-1 h-[10%]">
+              <button
+                onClick={closeAddMembersModal}
+                className="w-[50%] flex justify-center items-center text-black text-[14px] font-semibold h-[100%] bg-white rounded-3xl"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitUsers}
+                className="w-[50%] flex justify-center items-center text-black text-[14px] font-semibold h-[100%] bg-[#FFC248] rounded-3xl"
+              >
+                Add Users
+              </button>
+            </div>
+          )}
+
+          {admin !== userId && (
+            <div className="flex flex-row justify-between items-center w-full space-x-1 h-[10%]">
+              <button
+                onClick={closeAddMembersModal}
+                className="w-full flex justify-center items-center text-black text-[14px] font-semibold h-[100%] bg-white rounded-3xl"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

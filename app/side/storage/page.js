@@ -20,7 +20,7 @@ import moment from "moment";
 import { useAuthContext } from "@/utils/auth";
 import { RiSearch2Line } from "react-icons/ri";
 import { LuSettings2 } from "react-icons/lu";
-import { IoCloudUploadOutline } from "react-icons/io5";
+import { IoCloudUpload, IoCloudUploadOutline } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { HiDownload } from "react-icons/hi";
 import { RxCross2 } from "react-icons/rx";
@@ -62,7 +62,7 @@ function Page() {
     } catch (e) {
       console.error(e);
     }
-  }, [orgid]);
+  }, [data?.id]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -135,7 +135,9 @@ function Page() {
   useEffect(() => {
     if (orgid) {
       fetchstorage();
-    } else {
+    }
+    const s = localStorage.getItem("orgid");
+    if (!s) {
       fetchstorageFromUser();
     }
   }, [orgid]);
@@ -160,8 +162,6 @@ function Page() {
     return Math.min(widthPercentage, 100);
   };
 
-  console.log(calculateWidthPercentage(filestorage), "filestorage");
-
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -176,9 +176,9 @@ function Page() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full px-2">
       <div className="h-[100%] w-full scrollbar-hide flex flex-col ">
-        <div className="h-[60px] w-full py-2 flex flex-row pn:max-sm:flex-col items-center px-2 justify-between">
+        <div className="h-[60px] w-full py-2 flex flex-row pn:max-sm:flex-col items-center justify-between">
           <div className="h-[50px] w-[50%] bg-white mt-6 py-2 flex items-center px-2 text-[12px] rounded-2xl mb-6 text-[#BEBEBE]">
             <input
               type="text"
@@ -229,19 +229,19 @@ function Page() {
               </div>
             </div>
             <div className="space-x-3 h-[100%] flex flex-row items-center justify-evenly">
-              <div className="p-2 rounded-xl border-2 text-[12px] text-black font-semibold justify-center items-center">
+              {/* <div className="p-2 rounded-xl border-2 text-[12px] text-black font-semibold justify-center items-center">
                 Download all
-              </div>
+              </div> */}
               <div
                 onClick={() => setUploadpop(true)}
-                className="p-2 flex flex-row rounded-xl border-2 text-[12px] text-white bg-[#FFC248] border-[#FFC248] justify-evenly items-center font-semibold"
+                className="p-2 mr-5 flex flex-row rounded-xl border-2 text-[12px] text-white bg-[#FFC248] border-[#FFC248] justify-evenly items-center font-semibold"
               >
                 <Image
                   src={upload}
                   alt="img"
                   className="h-[16px] w-[16px] object-contain"
                 />
-                <div className="mx-2 pn:max-sm:hidden">Upload</div>
+                <div className=" mx-2 pn:max-sm:hidden ">Upload</div>
               </div>
               {/* <div className="bg-white rounded-lg p-3 shadow-sm">
                 <LuSettings2 />
@@ -250,7 +250,7 @@ function Page() {
           </div>
 
           {/* File List */}
-          <div className="flex flex-row pn:max-sm:hidden w-[100%] h-[50px] items-center justify-evenly px-62 font-bold">
+          <div className="flex flex-row pn:max-sm:hidden w-[100%] h-[50px] items-center justify-evenly  font-bold">
             <div className="flex items-center sm:w-[30%] w-[60%] text-left ml-4">
               File Name
             </div>
@@ -263,7 +263,7 @@ function Page() {
             <div className="flex items-center sm:w-[20%] w-[20%] text-left">
               Uploaded By
             </div>
-            <div className="flex items-center sm:w-[10%] w-[20%] text-left">
+            <div className="flex items-center sm:w-[10%] w-[20%] text-left px-5">
               Actions
             </div>
           </div>
@@ -303,12 +303,13 @@ function Page() {
                               className="text-[18px] cursor-pointer text-[#F13E3E]"
                               onClick={() => handledel(d._id)}
                             />
-
                             {console.log(d, "D")}
                             <div
-                              className="text-[14px] cursor-pointer text-[#0C78E3]"
+                              className="text-[14px] cursor-pointer text-blue-600"
                               onClick={() => handledownload(d.objectName)}
-                            ></div>
+                            >
+                              <HiDownload />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -371,22 +372,46 @@ function Page() {
         {/* Upload Popup */}
         {uploadpop && (
           <div className="fixed inset-0 bg-[#C0C0C0]/50 flex justify-center items-center">
-            <div className="bg-white p-4 rounded-xl w-[30%]">
+            <div className="bg-[#FFF8EB] p-4 rounded-xl w-[30%]">
               <div className="flex justify-between">
-                <h2 className="text-[20px] text-[#1E1E1E] font-bold">
-                  Media Upload
+                <h2 className="text-[15px] text-[#1E1E1E] font-semibold mb-2">
+                  Upload File Here
                 </h2>
                 <RxCross2
                   onClick={() => setUploadpop(false)}
                   className="cursor-pointer text-[#F13E3E]"
                 />
               </div>
+              <div className="flex flex-col items-center justify-center rounded-xl border border-2 w-full h-[150px] border-gray-200">
+                <div className="flex flex-col items-center justify-center w-full h-full">
+                  {filename ? (
+                    <div className="text-[13px] flex-col flex justify-center items-center">
+                      {/* <MdDriveFolderUpload className="text-[20px]"/> */}
+                      <div>Uploading...</div>
+                      <div>{filename}</div>
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="uploadfile"
+                      className="w-full h-full flex items-center justify-center"
+                    >
+                      <div className="w-full h-full flex items-center justify-center">
+                        <IoCloudUpload className="text-2xl text-gray-400" />
+                      </div>
+                    </label>
+                  )}
+                </div>
+              </div>
               <input
                 type="file"
+                id="uploadfile"
                 onChange={handleFileChange}
-                className="w-full h-[45px] border rounded-md px-2"
+                className="w-full h-[100px] border rounded-md hidden px-2 bg-red-500"
               />
-              <p className="text-[#A8A8A8]">Max 10 MB files are allowed</p>
+
+              <p className="text-gray-500 text-[12px] mt-2">
+                Max 2 GB files are allowed
+              </p>
             </div>
           </div>
         )}

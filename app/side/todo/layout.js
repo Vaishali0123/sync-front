@@ -86,10 +86,10 @@ export default function SideLayout({ children }) {
         </div>
       </div>
       <div className="w-full h-[90vh] md:mt-1">{children}</div>
-      {swtch === 1 ? (
-        <TeamModal isOpen={teamtasks} onClose={close} />
-      ) : (
+      {path == "/side/todo" || path === "/side/todo/Mytask" ? (
         <TaskModal isOpen={teamtasks} onClose={close} />
+      ) : (
+        <TeamModal isOpen={teamtasks} onClose={close} />
       )}
     </div>
   );

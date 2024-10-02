@@ -22,6 +22,7 @@ function page() {
   const [load, setLoad] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
+  const [dp, setDp] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [prevdetails, setPrevdetails] = useState();
@@ -30,6 +31,7 @@ function page() {
   const [code, setCode] = useState("");
   const [option, setOption] = useState(0);
   const [orgid, setOrgid] = useState("");
+  const [visible, setVisible] = useState(false);
 
   const userdata = async () => {
     try {
@@ -38,11 +40,14 @@ function page() {
       });
       const dataa = response.data;
       setPrevdetails(response.data);
+      setDp(process.env.NEXT_PUBLIC_URL + response.data.user?.dp);
       setName(dataa?.user?.name);
       setRole(dataa?.user?.jobrole);
       setEmail(dataa?.user?.email);
+      setVisible(response.data?.showCode);
       setPassword(dataa?.user?.password);
       setCode(dataa?.code);
+
       // const userid = dataa.find((e) => e._id === d._id);
       // if (userid) {
       //   setName(userid.username);
@@ -84,13 +89,26 @@ function page() {
   const editdetails = async () => {
     try {
       setLoad(true);
-      const response = await axios.post(`${API}/updatedetails`, {
-        id: id,
-        email: email,
-        password: password,
-        role: role,
-        name: name,
-      });
+
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("role", role);
+      formData.append("name", name);
+      formData.append("dp", dp);
+
+      const newData = {
+        ...data,
+        dp: URL.createObjectURL(dp),
+      };
+
+      console.log(newData);
+      setData(newData);
+
+      const response = await axios.post(`${API}/updatedetails`, formData);
+      if (response.data.success) {
+      }
 
       console.log(response.data);
     } catch (e) {
@@ -98,6 +116,19 @@ function page() {
     }
     setLoad(false);
   };
+
+  const handleChange = async (e) => {
+    try {
+      const file = e.target.files[0];
+
+      if (file) {
+        setDp(file);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="h-full w-full sm:pt-1 sm:px-4">
       <div className="w-full py-4 pl-4 rounded-2xl pn:max-sm:hidden font-semibold text-[16px] bg-white ">
@@ -108,7 +139,11 @@ function page() {
         <div className="h-full sm:w-[25%] w-[100%] bg-white sm:rounded-2xl p-2">
           <div className="w-full bg-[#f9f9f9] h-[100px] sm:h-[200px] rounded-2xl sm:flex-col flex items-center sm:justify-center px-2 space-x-2">
             <div className="h-[65px] w-[65px] bg-[#fff] overflow-hidden rounded-full">
-              <img src={data?.dp} className="w-full h-full object-cover" />
+              <img
+                // src={data?.dp}
+                src={typeof dp === "string" ? dp : URL.createObjectURL(dp)}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <div className="font-semibold text-[16px] mt-5">{name}</div>
@@ -128,37 +163,7 @@ function page() {
               <IoIosArrowForward />
             </div>
           </div>
-          {/* <div className="flex justify-between px-2 h-[50px] items-center border-b-[1px] hover:bg-[#fafafa] hover:rounded-lg border-[#f1f1f1]">
-            <div className="font-medium text-[#3e3e3e]">Notifications</div>
-            <div className="text-[#7e7e7e]">
-              <IoIosArrowForward />
-            </div>
-          </div>
-          <div className="flex justify-between px-2 h-[50px] items-center border-b-[1px] hover:bg-[#fafafa] border-[#f1f1f1]">
-            <div className="font-medium text-[#3e3e3e]">All My task</div>
-            <div className="text-[#7e7e7e]">
-              <IoIosArrowForward />
-            </div>
-          </div>
-          <div className="flex justify-between px-2 h-[50px] items-center border-b-[1px] hover:bg-[#fafafa] border-[#f1f1f1]">
-            <div className="font-medium text-[#3e3e3e]">My Storage</div>
-            <div className="text-[#7e7e7e]">
-              <IoIosArrowForward />
-            </div>
-          </div> */}
 
-          {/* <div className="flex justify-between px-2 h-[50px] items-center border-b-[1px] hover:bg-[#fafafa] border-[#f1f1f1]">
-            <div className="font-medium text-[#3e3e3e]">Privacy & Security</div>
-            <div className="text-[#7e7e7e]">
-              <IoIosArrowForward />
-            </div>
-          </div>
-          <div className="flex justify-between px-2 h-[50px] items-center border-b-[1px] hover:bg-[#fafafa] border-[#f1f1f1]">
-            <div className="font-medium text-[#3e3e3e]">T&C</div>
-            <div className="text-[#7e7e7e]">
-              <IoIosArrowForward />
-            </div>
-          </div> */}
           <div
             onClick={() => {
               setLoggout(true);
@@ -175,10 +180,47 @@ function page() {
         <div className="h-full w-[75%] pn:max-sm:hidden bg-white rounded-2xl flex flex-col items-center justify-center">
           {/* dp */}
           <div className="w-full h-[100px] mt-2 flex items-center justify-center flex-col">
-            <div className="h-[65px] w-[65px] bg-[#fff] overflow-hidden rounded-full mb-4">
-              <img src={data?.dp} className="w-full h-full object-cover" />
-            </div>
-            <div className="font-medium text-blue-500">Update Profile</div>
+            {dp ? (
+              <div className="h-[65px] w-[65px] bg-[#fff] overflow-hidden rounded-full mb-4">
+                <img
+                  src={typeof dp == "string" ? dp : URL.createObjectURL(dp)}
+                  className="w-full h-full object-cover"
+                />
+                <div className="">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="profile"
+                    onChange={handleChange}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="h-[65px] w-[65px] bg-[#ffffff70] overflow-hidden rounded-full mb-4">
+                <label
+                  htmlFor="profile"
+                  className="font-medium h-[65px] w-[65px] text-blue-500"
+                >
+                  <div className="">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="profile"
+                      onChange={handleChange}
+                      className="hidden"
+                    />
+                  </div>
+                </label>
+              </div>
+            )}
+
+            <label
+              htmlFor="profile"
+              className="font-medium text-sm cursor-pointer text-blue-500"
+            >
+              <div>Update Profile</div>
+            </label>
           </div>
           <div className="h-full w-full mt-4 ">
             {/* name */}
@@ -246,15 +288,18 @@ function page() {
                 placeholder="Enter you jobrole"
               />
             </div>
-
-            <div className="h-[70px] w-full flex flex-col items-center mt-2 ">
-              <div className="w-[50%] font-semibold text-[#3e3e3e] ">Code </div>
-              <input
-                value={code}
-                className="h-[50%] w-[50%] border-b-2 border-[#c7c5c5] outline-none"
-                placeholder="Enter you jobrole"
-              />
-            </div>
+            {visible && (
+              <div className="h-[70px] w-full flex flex-col items-center mt-2 ">
+                <div className="w-[50%] font-semibold text-[#3e3e3e] ">
+                  Code{" "}
+                </div>
+                <input
+                  value={code}
+                  className="h-[50%] w-[50%] border-b-2 border-[#c7c5c5] outline-none"
+                  placeholder="Enter you jobrole"
+                />
+              </div>
+            )}
 
             <div className="flex mt-2  w-[80%] justify-end">
               <div className="bg-[#F1F2F3] p-2 rounded-md font-semibold text-[12px] justify-center items-center flex">
@@ -262,24 +307,25 @@ function page() {
               </div>
               <div
                 onClick={() => {
-                  if (
-                    prevdetails?.user?.name != name ||
-                    prevdetails?.user?.email != email ||
-                    prevdetails?.user?.jobrole != role ||
-                    prevdetails?.user?.password != password
-                  ) {
-                    editdetails();
-                  }
+                  // if (
+                  //   prevdetails?.user?.name != name ||
+                  //   prevdetails?.user?.email != email ||
+                  //   prevdetails?.user?.jobrole != role ||
+                  //   prevdetails?.user?.password != password
+                  // ) {
+                  editdetails();
+                  // }
                 }}
-                className={`p-2 text-white ${
+                className={`p-2 text-white  rounded-md font-semibold text-[12px] ml-4 bg-[#FFC977]`}
+              >
+                {/* ${
                   prevdetails?.user?.name === name &&
                   prevdetails?.user?.email === email &&
                   prevdetails?.user?.jobrole === role &&
                   prevdetails?.user?.password === password
                     ? "bg-[#ffdead]"
                     : "bg-[#FFC977] "
-                }  rounded-md font-semibold text-[12px] ml-4`}
-              >
+                }  */}
                 {load ? (
                   <div className="animate-spin">
                     <AiOutlineLoading3Quarters />

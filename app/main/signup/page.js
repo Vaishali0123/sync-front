@@ -12,39 +12,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { API } from "@/utils/Essentials";
 import { setEmail, setImage, setName, setPassword } from "@/lib/signupSlice";
 
-
 function page() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const email = useSelector((state) => state.signup.email)
-  const password = useSelector((state) => state.signup.password)
-  const image = useSelector((state) => state.signup.image)
-  const fullname = useSelector((state) => state.signup.name)
-  const handleSubmit = async () => {
-    try {
-      const formData = new FormData()
-      formData.append("email", email)
-      formData.append("fullname", fullname)
-      formData.append("password", password)
-      formData.append("dp", image)
-      const response = await axios.post(`${API}/signup`, formData);
-      if (response.status === 200) {
-        router.push("../main/signedup");
-      } else {
-        console.log("User unable to signup");
-      }
-
-      // dispatch(
-      //   userData({ id: response.data._id, orgname: orgname, email: email })
-      // );
-      //  console.log("User created:", response.data);
-
-      // router.push("../side/todo");
-    } catch (error) {
-      console.error("Error creating user:", error.message);
-      // Handle the error (e.g., display an error message to the user)
-    }
-  };
+  const email = useSelector((state) => state.signup.email);
+  const password = useSelector((state) => state.signup.password);
+  const image = useSelector((state) => state.signup.image);
+  const fullname = useSelector((state) => state.signup.name);
 
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -55,9 +29,8 @@ function page() {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-
       //const imageUrl = await convertImageToDataURL(file);
-      dispatch(setImage(file))
+      dispatch(setImage(file));
     }
   };
   const func = async () => {
@@ -90,7 +63,7 @@ function page() {
       //   }
       // }
 
-      router.push("/main/signedup")
+      router.push("/main/signedup");
     } catch (error) {
       console.error("Error creating user:", error.message);
     }
@@ -142,7 +115,11 @@ function page() {
             <div className="w-full  flex flex-col  justify-center items-center">
               <label className="relative flex items-center flex-col">
                 <img
-                  src={image ? URL.createObjectURL(image) : "/placeholder-image.png"}
+                  src={
+                    image
+                      ? URL.createObjectURL(image)
+                      : "/placeholder-image.png"
+                  }
                   alt="Choose"
                   className="rounded-full text-[8px] bg-gray-200 h-[50px] w-[50px]"
                 />
@@ -154,7 +131,9 @@ function page() {
                 {!image ? (
                   <div className="mt-2 text-[10px] text-black">Upload</div>
                 ) : (
-                  <div className="mt-2 text-[10px] text-black">{image.name}</div>
+                  <div className="mt-2 text-[10px] text-black">
+                    {image.name}
+                  </div>
                 )}
                 {/* <div className="text-sm mt-2">{imge}</div> */}
               </label>
@@ -162,7 +141,7 @@ function page() {
                 <button
                   className="mt-1 text-[10px] underline text-red-500 hover:text-red-700 focus:outline-none"
                   onClick={() => {
-                    dispatch(setImage(""))
+                    dispatch(setImage(""));
                   }}
                 >
                   Remove

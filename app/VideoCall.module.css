@@ -1,0 +1,80 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f0f0;
+  padding: 20px;
+}
+
+.roomInput {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  width: 200px;
+}
+
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.videoContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px 0;
+}
+
+.localVideoWrapper,
+.remoteVideoWrapper {
+  flex: 1;
+  margin: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.localVideo {
+  width: 100%;
+  height: auto;
+}
+
+.remoteVideo {
+  width: 100%;
+  height: auto;
+}
+
+.callControls {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.endCallButton {
+  background-color: #dc3545; /* Red color for end call */
+}
+
+.endCallButton:hover {
+  background-color: #c82333; /* Darker red on hover */
+}

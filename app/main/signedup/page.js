@@ -12,6 +12,7 @@ import Cookies from "js-cookie";
 import { API } from "@/utils/Essentials";
 import { setOrganisationList } from "@/lib/signupSlice";
 import { useAuthContext } from "@/utils/auth";
+import { toast, ToastContainer } from "react-toastify";
 // import firebase from "../../../firebase";
 
 function page() {
@@ -181,29 +182,29 @@ function page() {
     }
   };
 
-  // useEffect(() => {
-  //   // Check if any of the fields are missing
-  //   if (!email || !password || !image || !fullname) {
-  //     // Redirect to the signup page
-  //     router.back()
-  //   }
-  // }, [email, password, image, fullname,]);
+  useEffect(() => {
+    // Check if any of the fields are missing
+    if (!email || !password || !image || !fullname) {
+      // Redirect to the signup page
+      router.back();
+    }
+  }, [email, password, image, fullname]);
 
   return (
     <>
       {popup && (
         <div className="flex justify-center items-center h-screen fixed inset-0  w-full">
           <div id="default-modal" tabindex="-1" aria-hidden="true" class=" ">
-            <div class="relative p-4 w-full max-w-xl max-h-full">
-              <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    Terms of Service
+            <div class="relative p-2 w-full max-w-xl max-h-full">
+              <div class="relative bg-white rounded-lg shadow ">
+                <div class="flex items-center justify-between p-2 md:p-3 border-b rounded-t ">
+                  <h3 class="text-md font-semibold text-gray-900 ">
+                    Enter Organisation Code
                   </h3>
                   <button
                     onClick={() => setPopup(false)}
                     type="button"
-                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center "
                     data-modal-hide="default-modal"
                   >
                     <svg
@@ -236,22 +237,22 @@ function page() {
                   />
                 </div>
 
-                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <div class="flex items-center p-2 md:p-3 border-t border-gray-200 rounded-b ">
                   <button
                     onClick={checkInviteCode}
                     data-modal-hide="default-modal"
                     type="button"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    class="text-white bg-[#E48700] hover:bg-white font-medium rounded-lg text-sm px-3 py-2.5 text-center hover:text-black border  border-[#E48700]"
                   >
-                    I accept
+                    Submit
                   </button>
-                  <button
+                  {/* <button
                     data-modal-hide="default-modal"
                     type="button"
                     class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                   >
                     Decline
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
@@ -473,49 +474,40 @@ function page() {
                   <div className="text-black text-[26px] font-semibold">
                     Join an organization
                   </div>
-                  {/* <div className="flex flex-col">
-                  <div className="text-[12px] text-[#8D8D8D]">No Account ?</div>
-
-                  <Link
-                    href={"/main/signup"}
-                    className="text-[#B87514] hover text-[12px]"
-                  >
-                    Sign up
-                  </Link>
-                </div> */}
                 </div>
 
-                <div className=" h-[340px] flex flex-col justify-evenly">
+                <div className=" h-[340px] overflow flex flex-col justify-evenly">
                   {organisationlist?.map((d) => (
-                    <div className="flex justify-between items-center px-3">
+                    <div className="flex justify-between items-center p-3  bg-[#FFC977] shadow-sm rounded-md">
                       <div>{d?.title}</div>
                       <div
+                        className="text-[14px] text-blue hover:text-blue-600 shadow-sm"
                         onClick={() => {
                           setOrg(d?.title);
                           setOrgid(d?._id);
                         }}
                       >
-                        Join
+                        <button className="rounded-lg bg-white px-2 border border-gray-300">
+                          Join
+                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
                 {/* Continue */}
-                {join === 1 ? (
-                  <div
-                    onClick={handleSubmit}
-                    className="bg-[#E48700] text-white text-[12px] flex justify-center items-center rounded-lg h-[40px] w-[350px]"
-                  >
-                    Next
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => setPopup(true)}
-                    className="bg-[#E48700] text-white text-[12px] flex justify-center items-center rounded-lg h-[40px] w-[350px]"
-                  >
-                    {org ? `Join ${org}` : "Next"}
-                  </div>
-                )}
+
+                <div
+                  onClick={() => {
+                    if (!orgid) {
+                      toast.error("Choose Any One organisation");
+                    } else {
+                      setPopup(true);
+                    }
+                  }}
+                  className="bg-[#E48700] text-white text-[12px] flex justify-center items-center rounded-lg h-[40px] w-[350px]"
+                >
+                  {org ? `Join ${org}` : "Choose Organisation"}
+                </div>
               </div>
             ) : null}
             {/* <div className="flex flex-col">
