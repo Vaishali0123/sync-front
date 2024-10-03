@@ -56,7 +56,7 @@ function page() {
           expires: expirationDate,
         });
 
-        setData(data?.data);
+        setData(response.data?.data);
 
         localStorage.setItem("orgid", response.data?.orgId);
         localStorage.setItem("orgtitle", org);
